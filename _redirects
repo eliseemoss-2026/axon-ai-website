@@ -1,11 +1,2 @@
-# Force HTTPS (Cloudflare handles this but good to have)
-http://axonai.com/* https://axonai.com/:splat 301!
-http://www.axonai.com/* https://axonai.com/:splat 301!
-https://www.axonai.com/* https://axonai.com/:splat 301!
-
-# Clean URLs
 /home /index.html 200
 /contact /contact.html 200
-
-# 404 fallback
-/* /index.html 404
