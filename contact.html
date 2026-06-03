@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+  <meta name="robots" content="index, follow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://app.cal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://formspree.io https://app.cal.com; frame-src https://cal.com https://app.cal.com; img-src 'self' data: blob:; object-src 'none'; base-uri 'self';">
+<title>Contact — Axon AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root { --em:#10b981;--ind:#6366f1;--gold:#f59e0b;--bg:#060810;--bg2:#0b0f1a;--fg:#ffffff;--muted:rgba(255,255,255,0.45);--border:rgba(255,255,255,0.07);--font:'Outfit',sans-serif; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);overflow-x:hidden;cursor:none;-webkit-font-smoothing:antialiased;}
+#cursor{position:fixed;width:10px;height:10px;background:var(--em);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s,width .3s,height .3s;mix-blend-mode:screen;}
+#cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(16,185,129,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s ease-out,top .12s ease-out,width .4s,height .4s,border-color .3s;}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.noise{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px 200px;}
+.scanlines{position:fixed;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);}
+main{position:relative;z-index:10;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:22px 48px;backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .4s,background .4s;}
+nav.scrolled{background:rgba(6,8,16,0.92);border-color:var(--border);}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--font);font-weight:800;font-size:16px;color:var(--fg);text-decoration:none;}
+.nav-logo-icon{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 40% 40%,rgba(16,185,129,0.18),rgba(99,102,241,0.10),rgba(6,8,16,0.9));border:1px solid rgba(16,185,129,0.35);display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 0 12px rgba(16,185,129,0.2),0 0 30px rgba(16,185,129,0.06);flex-shrink:0;}
+.nav-logo-text{display:flex;flex-direction:column;line-height:1;}
+.nav-logo-text .logo-main{font-size:16px;font-weight:900;letter-spacing:-0.01em;color:#fff;}
+.nav-logo-text .logo-sub{font-size:8px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--em);margin-top:1px;}
+.nav-links{display:flex;gap:36px;list-style:none;}
+.nav-links a{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;transition:color .2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--fg);}
+.nav-cta{font-size:13px;font-weight:600;color:var(--em);text-decoration:none;border:1px solid rgba(16,185,129,0.35);padding:9px 22px;border-radius:40px;transition:background .2s,color .2s;display:flex;align-items:center;gap:6px;}
+.nav-cta:hover{background:rgba(16,185,129,0.1);color:#fff;}
+
+/* PAGE HERO */
+.page-hero{padding:160px 48px 80px;max-width:1200px;margin:0 auto;text-align:center;}
+.page-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--em);letter-spacing:0.16em;text-transform:uppercase;margin-bottom:24px;opacity:0;animation:fadeUp .7s .2s forwards;}
+.page-title{font-family:var(--font);font-weight:900;font-size:clamp(44px,7vw,90px);line-height:0.95;letter-spacing:-0.03em;margin-bottom:24px;opacity:0;animation:fadeUp .8s .35s forwards;}
+.page-title span{color:var(--em);}
+.page-sub{font-size:17px;color:var(--muted);font-weight:400;line-height:1.7;max-width:520px;margin:0 auto 48px;opacity:0;animation:fadeUp .8s .5s forwards;}
+.page-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeUp .8s .65s forwards;}
+
+/* CONTACT GRID */
+.contact-wrap{max-width:1100px;margin:0 auto;padding:0 48px 120px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;}
+
+/* Left info */
+.contact-info-title{font-family:var(--font);font-size:22px;font-weight:700;margin-bottom:12px;}
+.contact-info-sub{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:36px;}
+.contact-items{display:flex;flex-direction:column;gap:12px;}
+.contact-item{display:flex;align-items:center;gap:14px;padding:16px 20px;border:1px solid var(--border);border-radius:12px;background:var(--bg2);transition:border-color .2s;text-decoration:none;color:var(--fg);}
+.contact-item:hover{border-color:rgba(16,185,129,0.3);}
+.contact-icon{width:38px;height:38px;border-radius:10px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ci-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
+.ci-value{font-size:14px;font-weight:600;}
+.cal-cta{margin-top:32px;border:1px solid rgba(16,185,129,0.2);border-radius:16px;padding:28px;background:var(--bg2);text-align:center;}
+.cal-cta p{font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--em);color:#000;font-family:var(--font);font-size:14px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:50px;transition:transform .2s,box-shadow .2s;cursor:pointer;border:none;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(16,185,129,0.4);}
+
+/* Form */
+.contact-form-wrap{border:1px solid var(--border);border-radius:20px;padding:40px;background:var(--bg2);position:relative;overflow:hidden;}
+.contact-form-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--em),transparent);opacity:.4;}
+.form-row{margin-bottom:20px;}
+.form-label{font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:block;font-weight:600;}
+.form-input,.form-textarea,.form-select{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:13px 16px;color:var(--fg);font-family:var(--font);font-size:14px;font-weight:400;outline:none;transition:border-color .2s,box-shadow .2s;resize:none;}
+.form-input::placeholder,.form-textarea::placeholder{color:rgba(255,255,255,0.2);}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:rgba(16,185,129,0.4);box-shadow:0 0 0 3px rgba(16,185,129,0.06);}
+.form-textarea{height:120px;}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.3)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+.form-select option{background:var(--bg2);color:var(--fg);}
+.form-2col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-submit{width:100%;background:var(--em);color:#000;border:none;border-radius:50px;padding:15px;font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:.03em;cursor:pointer;transition:transform .2s,box-shadow .2s;margin-top:4px;}
+.form-submit:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(16,185,129,0.4);}
+
+/* Success/Error */
+#form-success{display:none;text-align:center;padding:60px 20px;}
+.success-icon{font-size:56px;margin-bottom:16px;}
+#form-success h4{font-size:24px;font-weight:700;margin-bottom:10px;}
+#form-success p{font-size:15px;color:var(--muted);line-height:1.7;}
+#form-error{display:none;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:12px;padding:16px 20px;margin-bottom:20px;font-size:13px;color:#ef4444;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;}
+.footer-copy{font-size:13px;color:var(--muted);}
+.footer-em{color:var(--em);}
+.footer-links{display:flex;gap:28px;}
+.footer-links a{font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s;}
+.footer-links a:hover{color:var(--fg);}
+.footer-loc{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px;}
+
+/* HUD */
+.hud-line{position:fixed;pointer-events:none;z-index:3;opacity:0.025;}
+.hud-h{top:50%;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--em),transparent);}
+.hud-v{left:50%;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--em),transparent);}
+.corner-tl,.corner-tr,.corner-bl,.corner-br{position:fixed;z-index:4;pointer-events:none;width:20px;height:20px;opacity:.18;}
+.corner-tl{top:20px;left:20px;border-top:1px solid var(--em);border-left:1px solid var(--em);}
+.corner-tr{top:20px;right:20px;border-top:1px solid var(--em);border-right:1px solid var(--em);}
+.corner-bl{bottom:20px;left:20px;border-bottom:1px solid var(--em);border-left:1px solid var(--em);}
+.corner-br{bottom:20px;right:20px;border-bottom:1px solid var(--em);border-right:1px solid var(--em);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(0.22,1,0.36,1),transform .7s cubic-bezier(0.22,1,0.36,1);}
+.reveal.visible{opacity:1;transform:none;}
+.reveal-d1{transition-delay:.1s;}.reveal-d2{transition-delay:.2s;}
+
+@media(max-width:900px){
+  nav{padding:18px 24px;}
+  .nav-links{display:none;}
+  .page-hero{padding:120px 24px 60px;}
+  .contact-wrap{grid-template-columns:1fr;padding:0 24px 80px;gap:40px;}
+  footer{padding:24px;flex-direction:column;gap:16px;text-align:center;}
+  .footer-links{flex-wrap:wrap;justify-content:center;}
+  .form-2col{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="bg-canvas"></canvas>
+<div class="noise"></div>
+<div class="scanlines"></div>
+<div class="hud-line hud-h"></div>
+<div class="hud-line hud-v"></div>
+<div class="corner-tl"></div><div class="corner-tr"></div>
+<div class="corner-bl"></div><div class="corner-br"></div>
+
+<main>
+
+<nav id="nav">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="14" cy="14" rx="12" ry="5" stroke="rgba(16,185,129,0.35)" stroke-width="0.8" fill="none" transform="rotate(-30 14 14)"/>
+        <ellipse cx="14" cy="14" rx="8" ry="3.2" stroke="rgba(99,102,241,0.3)" stroke-width="0.6" fill="none" transform="rotate(50 14 14)"/>
+        <circle cx="5" cy="7" r="0.8" fill="rgba(16,185,129,0.7)"/>
+        <circle cx="22" cy="5" r="0.6" fill="rgba(255,255,255,0.5)"/>
+        <circle cx="24" cy="19" r="0.7" fill="rgba(99,102,241,0.8)"/>
+        <circle cx="4" cy="21" r="0.5" fill="rgba(255,255,255,0.4)"/>
+        <circle cx="14" cy="3" r="0.6" fill="rgba(16,185,129,0.5)"/>
+        <circle cx="3.5" cy="12.5" r="1.2" fill="#10b981" filter="url(#glow2)"/>
+        <circle cx="21" cy="11" r="1" fill="#6366f1" opacity="0.9"/>
+        <circle cx="14" cy="14" r="4" fill="url(#planet-grad2)"/>
+        <circle cx="12.5" cy="12.5" r="1.2" fill="rgba(255,255,255,0.15)"/>
+        <defs>
+          <radialGradient id="planet-grad2" cx="35%" cy="35%">
+            <stop offset="0%" stop-color="#34d399"/>
+            <stop offset="60%" stop-color="#10b981"/>
+            <stop offset="100%" stop-color="#065f46"/>
+          </radialGradient>
+          <filter id="glow2">
+            <feGaussianBlur stdDeviation="1" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+      </svg>
+    </div>
+    <div class="nav-logo-text">
+      <span class="logo-main">Axon AI</span>
+      <span class="logo-sub">by John Marrion</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="John_Marrion_Landing_Page.html#services">Services</a></li>
+    <li><a href="John_Marrion_Landing_Page.html#process">Process</a></li>
+    <li><a href="John_Marrion_Landing_Page.html#faq">FAQ</a></li>
+    <li><a href="contact.html" class="active">Contact</a></li>
+  </ul>
+  <a data-cal-link="john-marrion-kivtcz" data-cal-config='{"layout":"month_view"}' class="nav-cta" style="cursor:pointer;">🤖 Book a call</a>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-eyebrow">🤖 Let's build your AI advantage</div>
+  <h1 class="page-title">Get in <span>touch</span></h1>
+  <p class="page-sub">Have a project in mind, a question about AI, or just want to explore what's possible? I respond within 24 hours.</p>
+  <div class="page-actions">
+    <a data-cal-link="john-marrion-kivtcz" data-cal-config='{"layout":"month_view"}' class="btn-primary" style="cursor:pointer;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Book a free strategy call
+    </a>
+  </div>
+</section>
+
+<!-- CONTACT GRID -->
+<div class="contact-wrap">
+
+  <!-- Left: info + cal -->
+  <div>
+    <div class="contact-info-title reveal">Ready to talk?</div>
+    <div class="contact-info-sub reveal reveal-d1">Whether you're just exploring AI or ready to start a project — every conversation starts with a simple message or a free 30-minute call.</div>
+
+    <div class="contact-items reveal reveal-d1">
+      <a href="tel:+8613310086258" class="contact-item">
+        <div class="contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.46-.46a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92v2z"/></svg></div>
+        <div><div class="ci-label">WhatsApp · Phone</div><div class="ci-value">+86 133 1008 6258</div></div>
+      </a>
+      <a href="mailto:eliseemoss@gmail.com" class="contact-item">
+        <div class="contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <div><div class="ci-label">Email</div><div class="ci-value">eliseemoss@gmail.com</div></div>
+      </a>
+      <div class="contact-item">
+        <div class="contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div><div class="ci-label">Location</div><div class="ci-value">Remote · Worldwide</div></div>
+      </div>
+    </div>
+
+    <div class="cal-cta reveal reveal-d2">
+      <div style="font-size:36px;margin-bottom:12px;">📅</div>
+      <p>Prefer to talk directly? Book a free 30-minute strategy call and let's map out your AI opportunity together.</p>
+      <a data-cal-link="john-marrion-kivtcz" data-cal-config='{"layout":"month_view"}' class="btn-primary" style="cursor:pointer;">
+        Book free call — no pitch
+      </a>
+    </div>
+  </div>
+
+  <!-- Right: form -->
+  <div class="contact-form-wrap reveal reveal-d1">
+    <div id="form-success">
+      <div class="success-icon">🤖✅</div>
+      <h4>Message sent!</h4>
+      <p>Thanks for reaching out. John will get back to you within 24 hours.</p>
+    </div>
+    <div id="form-error">⚠️ Something went wrong. Please email directly at eliseemoss@gmail.com</div>
+
+    <form id="contact-form" action="https://formspree.io/f/xeedybgl" method="POST" novalidate>
+      <input type="hidden" name="_subject" value="New AI Consulting inquiry — AxonAI.com" />
+      <div class="form-2col">
+        <div class="form-row">
+          <label class="form-label" for="f-name">Your name *</label>
+          <input id="f-name" class="form-input" type="text" name="name" placeholder="Full name" required />
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="f-email">Email *</label>
+          <input id="f-email" class="form-input" type="email" name="email" placeholder="you@company.com" required />
+        </div>
+      </div>
+      <div class="form-2col">
+        <div class="form-row">
+          <label class="form-label" for="f-company">Company</label>
+          <input id="f-company" class="form-input" type="text" name="company" placeholder="Company name" />
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="f-service">Service interest</label>
+          <select id="f-service" class="form-select" name="service">
+            <option value="">Select a service</option>
+            <option>AI Strategy & Roadmap</option>
+            <option>Workflow Automation</option>
+            <option>LLM & GPT Integration</option>
+            <option>AI Analytics</option>
+            <option>AI Team Training</option>
+            <option>Custom AI Solution</option>
+            <option>Not sure yet</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="f-msg">Tell me about your project *</label>
+        <textarea id="f-msg" class="form-textarea" name="message" placeholder="What are you trying to solve? What does success look like for you?" required></textarea>
+      </div>
+      <button class="form-submit" type="submit" id="form-btn">Send Message 🤖</button>
+    </form>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-copy">© 2025 <span class="footer-em">Axon AI</span> · Led by John Marrion. All rights reserved.</div>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="John_Marrion_Landing_Page.html#services">Services</a>
+    <a href="John_Marrion_Landing_Page.html#faq">FAQ</a>
+  </div>
+  <div class="footer-loc">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    Remote · Worldwide
+  </div>
+</footer>
+
+</main>
+
+<script>
+const canvas=document.getElementById('bg-canvas'),ctx=canvas.getContext('2d');
+let W,H,particles=[],mouse={x:-1000,y:-1000};
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+class Particle{constructor(){this.reset(true);}reset(init=false){this.x=Math.random()*W;this.y=init?Math.random()*H:H+10;this.vx=(Math.random()-.5)*.3;this.vy=-Math.random()*.5-.1;this.r=Math.random()*1.2+.3;this.alpha=Math.random()*.5+.1;this.color=Math.random()>.7?'99,102,241':'16,185,129';this.life=1;this.decay=Math.random()*.003+.001;}update(){const dx=this.x-mouse.x,dy=this.y-mouse.y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){const f=(120-d)/120;this.vx+=(dx/d)*f*.4;this.vy+=(dy/d)*f*.4;}this.vx*=.99;this.vy*=.99;this.x+=this.vx;this.y+=this.vy;this.life-=this.decay;if(this.life<=0||this.y<-10)this.reset();}draw(){ctx.save();ctx.globalAlpha=this.alpha*this.life;ctx.fillStyle=`rgba(${this.color},1)`;ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fill();ctx.restore();}}
+for(let i=0;i<140;i++)particles.push(new Particle());
+function loop(){ctx.clearRect(0,0,W,H);particles.forEach(p=>{p.update();p.draw();});requestAnimationFrame(loop);}
+loop();
+window.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+window.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px';});
+document.querySelectorAll('a,button,[data-cal-link]').forEach(el=>{el.addEventListener('mouseenter',()=>{cur.style.width='20px';cur.style.height='20px';ring.style.borderColor='rgba(16,185,129,0.7)';});el.addEventListener('mouseleave',()=>{cur.style.width='10px';cur.style.height='10px';ring.style.borderColor='rgba(16,185,129,0.4)';});});
+
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',window.scrollY>30),{passive:true});
+
+const revObs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(i%3)*.1+'s';revObs.observe(el);});
+
+const form=document.getElementById('contact-form'),formBtn=document.getElementById('form-btn'),formSuccess=document.getElementById('form-success'),formError=document.getElementById('form-error');
+if(form){form.addEventListener('submit',async e=>{e.preventDefault();formError.style.display='none';const name=form.querySelector('[name="name"]').value.trim(),email=form.querySelector('[name="email"]').value.trim(),message=form.querySelector('[name="message"]').value.trim();if(!name||!email||!message){formError.textContent='⚠️ Please fill in all required fields.';formError.style.display='block';return;}formBtn.textContent='Sending…';formBtn.disabled=true;formBtn.style.opacity='.7';try{const res=await fetch(form.action,{method:'POST',headers:{'Accept':'application/json'},body:new FormData(form)});if(res.ok){form.style.display='none';formSuccess.style.display='block';}else throw new Error();}catch{formError.textContent='⚠️ Something went wrong. Email directly at eliseemoss@gmail.com';formError.style.display='block';formBtn.textContent='Send Message 🤖';formBtn.disabled=false;formBtn.style.opacity='1';}});}
+</script>
+
+<script>
+(function(C,A,L){let p=function(a,ar){a.q.push(ar);};let d=C.document;C.Cal=C.Cal||function(){let cal=C.Cal;let ar=arguments;if(!cal.loaded){cal.ns={};cal.q=cal.q||[];d.head.appendChild(d.createElement("script")).src=A;cal.loaded=true;}if(ar[0]===L){const api=function(){p(api,arguments);};const namespace=ar[1];api.q=api.q||[];typeof namespace==="string"?(cal.ns[namespace]=api)&&p(api,ar):p(cal,ar);return;}p(cal,ar);};})(window,"https://app.cal.com/embed/embed.js","init");
+Cal("init",{origin:"https://cal.com"});
+Cal("ui",{theme:"dark",styles:{branding:{brandColor:"#10b981"}},hideEventTypeDetails:false,layout:"month_view"});
+</script>
+</body>
+</html>
