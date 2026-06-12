@@ -1,9 +1,14 @@
 /**
- * Axon AI chat agent — Cloudflare Pages Function serving POST /api/chat.
+ * Axon AI chat agent — Cloudflare Pages advanced-mode worker (_worker.js).
+ *
+ * Handles POST /api/chat and passes every other request through to the
+ * static site via env.ASSETS. Advanced mode is used instead of a
+ * /functions directory because this Pages project serves /functions as
+ * static files rather than compiling it.
  *
  * Ported from the axon-chatbot Express server (validation, prompt build,
- * Claude call). Self-contained on purpose: Pages Functions on a static
- * project have no node_modules, so the Claude API is called with fetch.
+ * Claude call). Self-contained on purpose: no node_modules, so the
+ * Claude API is called with fetch.
  *
  * Requires ANTHROPIC_API_KEY set as a secret in the Pages project
  * (Settings → Environment variables → Production).
@@ -234,3 +239,17 @@ export async function onRequestPost(context) {
     return json(502, { success: false, error: "Sorry, I had trouble responding. Please try again." });
   }
 }
+
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+
+    if (url.pathname === "/api/chat") {
+      if (request.method === "OPTIONS") return onRequestOptions();
+      if (request.method === "POST") return onRequestPost({ request, env });
+      return json(405, { success: false, error: "Method not allowed." });
+    }
+
+    return env.ASSETS.fetch(request);
+  },
+};

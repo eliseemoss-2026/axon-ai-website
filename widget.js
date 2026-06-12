@@ -66,6 +66,8 @@
       ".axon-panel.axon-open{display:flex}" +
       ".axon-head{padding:14px 16px;color:#fff;font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px}" +
       ".axon-head .axon-dot{width:8px;height:8px;border-radius:50%;background:#2ecc71;flex:none}" +
+      ".axon-close{margin-left:auto;background:none;border:none;color:#fff;font-size:22px;line-height:1;cursor:pointer;padding:0 2px;opacity:.85}" +
+      ".axon-close:hover{opacity:1}" +
       ".axon-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background:#f7f7fb}" +
       ".axon-msg{max-width:85%;padding:9px 12px;border-radius:14px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}" +
       ".axon-msg.axon-user{align-self:flex-end;color:#fff;border-bottom-right-radius:4px}" +
@@ -75,10 +77,19 @@
       ".axon-typing i:nth-child(2){animation-delay:.15s}.axon-typing i:nth-child(3){animation-delay:.3s}" +
       "@keyframes axonB{0%,60%,100%{opacity:.3}30%{opacity:1}}" +
       ".axon-form{display:flex;border-top:1px solid #e8e8ef;background:#fff}" +
-      ".axon-input{flex:1;border:none;outline:none;padding:13px 14px;font-size:14px}" +
+      // 16px input prevents iOS Safari from auto-zooming the page on focus.
+      ".axon-input{flex:1;border:none;outline:none;padding:13px 14px;font-size:16px}" +
       ".axon-send{border:none;background:none;cursor:pointer;padding:0 14px;font-weight:600;font-size:14px}" +
       ".axon-powered{text-align:center;font-size:10px;color:#aab;padding:4px 0 6px;background:#fff}" +
-      ".axon-powered a{color:inherit}";
+      ".axon-powered a{color:inherit}" +
+      // Phones: full-screen panel. dvh tracks the visible viewport when the
+      // on-screen keyboard opens (100vh does not on iOS), and the form gets
+      // safe-area padding so the home indicator never covers the input.
+      "@media (max-width:480px){" +
+      ".axon-panel{top:0;left:0;right:0;bottom:0;width:100%;height:100%;height:100dvh;border-radius:0}" +
+      ".axon-panel.axon-open~.axon-bubble{display:none}" +
+      ".axon-form{padding-bottom:env(safe-area-inset-bottom)}" +
+      "}";
     var style = document.createElement("style");
     style.textContent = css;
     document.head.appendChild(style);
@@ -105,6 +116,13 @@
     head.style.background = COLOR;
     head.innerHTML = '<span class="axon-dot"></span>';
     head.appendChild(document.createTextNode(BOT_NAME));
+
+    var close = document.createElement("button");
+    close.className = "axon-close";
+    close.type = "button";
+    close.setAttribute("aria-label", "Close chat");
+    close.innerHTML = "&times;";
+    head.appendChild(close);
 
     var msgs = document.createElement("div");
     msgs.className = "axon-msgs";
@@ -143,6 +161,11 @@
         if (history.length === 0) addBotMessage(GREETING, false);
         input.focus();
       }
+    });
+
+    close.addEventListener("click", function () {
+      open = false;
+      panel.classList.remove("axon-open");
     });
 
     function handleSend(e) {
