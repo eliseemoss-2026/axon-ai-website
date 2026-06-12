@@ -202,9 +202,9 @@ footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;align-i
         <div class="contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.46-.46a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92v2z"/></svg></div>
         <div><div class="ci-label">WhatsApp · Phone</div><div class="ci-value">+86 133 1008 6258</div></div>
       </a>
-      <a href="mailto:eliseemoss@gmail.com" class="contact-item">
+      <a id="email-link" href="#" class="contact-item">
         <div class="contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-        <div><div class="ci-label">Email</div><div class="ci-value">eliseemoss@gmail.com</div></div>
+        <div><div class="ci-label">Email</div><div class="ci-value" id="email-display">—</div></div>
       </a>
       <div class="contact-item">
         <div class="contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
@@ -228,7 +228,7 @@ footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;align-i
       <h4>Message sent!</h4>
       <p>Thanks for reaching out. John will get back to you within 24 hours.</p>
     </div>
-    <div id="form-error">⚠️ Something went wrong. Please email directly at eliseemoss@gmail.com</div>
+    <div id="form-error">⚠️ Something went wrong. Please email us directly.</div>
 
     <form id="contact-form" action="https://formspree.io/f/xeedybgl" method="POST" novalidate>
       <input type="hidden" name="_subject" value="New AI Consulting inquiry — AxonAI.com" />
@@ -307,7 +307,17 @@ const revObs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isInters
 document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(i%3)*.1+'s';revObs.observe(el);});
 
 const form=document.getElementById('contact-form'),formBtn=document.getElementById('form-btn'),formSuccess=document.getElementById('form-success'),formError=document.getElementById('form-error');
-if(form){form.addEventListener('submit',async e=>{e.preventDefault();formError.style.display='none';const name=form.querySelector('[name="name"]').value.trim(),email=form.querySelector('[name="email"]').value.trim(),message=form.querySelector('[name="message"]').value.trim();if(!name||!email||!message){formError.textContent='⚠️ Please fill in all required fields.';formError.style.display='block';return;}formBtn.textContent='Sending…';formBtn.disabled=true;formBtn.style.opacity='.7';try{const res=await fetch(form.action,{method:'POST',headers:{'Accept':'application/json'},body:new FormData(form)});if(res.ok){form.style.display='none';formSuccess.style.display='block';}else throw new Error();}catch{formError.textContent='⚠️ Something went wrong. Email directly at eliseemoss@gmail.com';formError.style.display='block';formBtn.textContent='Send Message 🤖';formBtn.disabled=false;formBtn.style.opacity='1';}});}
+if(form){form.addEventListener('submit',async e=>{e.preventDefault();formError.style.display='none';const name=form.querySelector('[name="name"]').value.trim(),email=form.querySelector('[name="email"]').value.trim(),message=form.querySelector('[name="message"]').value.trim();if(!name||!email||!message){formError.textContent='⚠️ Please fill in all required fields.';formError.style.display='block';return;}formBtn.textContent='Sending…';formBtn.disabled=true;formBtn.style.opacity='.7';try{const res=await fetch(form.action,{method:'POST',headers:{'Accept':'application/json'},body:new FormData(form)});if(res.ok){form.style.display='none';formSuccess.style.display='block';}else throw new Error();}catch{formError.textContent='⚠️ Something went wrong. Please email us directly.';formError.style.display='block';formBtn.textContent='Send Message 🤖';formBtn.disabled=false;formBtn.style.opacity='1';}});}
+</script>
+
+<script>
+(function(){
+  const u='eliseemoss',d='gmail.com',e=u+'@'+d;
+  const link=document.getElementById('email-link');
+  const display=document.getElementById('email-display');
+  if(link) link.href='mailto:'+e;
+  if(display) display.textContent=e;
+})();
 </script>
 
 <script>
@@ -315,5 +325,6 @@ if(form){form.addEventListener('submit',async e=>{e.preventDefault();formError.s
 Cal("init",{origin:"https://cal.com"});
 Cal("ui",{theme:"dark",styles:{branding:{brandColor:"#10b981"}},hideEventTypeDetails:false,layout:"month_view"});
 </script>
+<script src="/widget.js" data-client="axon-ai" data-name="Axon Assistant" data-color="#10b981" data-greeting="Hi! I'm the Axon AI assistant. Ask me anything about our AI chat agents 👋" defer></script>
 </body>
 </html>
