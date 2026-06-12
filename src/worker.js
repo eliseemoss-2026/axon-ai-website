@@ -205,9 +205,10 @@ export async function onRequestPost(context) {
     console.log(`[lead] contact details detected for client "${parsed.clientId}"`);
   }
 
-  if (!env.ANTHROPIC_API_KEY) {
-    console.error("[config] ANTHROPIC_API_KEY is not set on the Pages project");
-    return json(502, { success: false, error: "Sorry, I had trouble responding. Please try again." });
+  const apiKey = (env.ANTHROPIC_API_KEY || "").trim();
+  if (!apiKey) {
+    console.error("[config] ANTHROPIC_API_KEY is not set on the Worker");
+    return json(502, { success: false, error: "Sorry, I had trouble responding. Please try again.", code: "config" });
   }
 
   try {
@@ -215,7 +216,7 @@ export async function onRequestPost(context) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": env.ANTHROPIC_API_KEY,
+        "x-api-key": apiKey,
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
@@ -228,14 +229,14 @@ export async function onRequestPost(context) {
 
     if (!apiRes.ok) {
       console.error(`[Claude API Error] status ${apiRes.status}`);
-      return json(502, { success: false, error: "Sorry, I had trouble responding. Please try again." });
+      return json(502, { success: false, error: "Sorry, I had trouble responding. Please try again.", code: `upstream_${apiRes.status}` });
     }
 
     const data = await apiRes.json();
     return json(200, { success: true, reply: data.content[0].text });
   } catch (err) {
     console.error("[Claude API Error]", err.message);
-    return json(502, { success: false, error: "Sorry, I had trouble responding. Please try again." });
+    return json(502, { success: false, error: "Sorry, I had trouble responding. Please try again.", code: "exception" });
   }
 }
 
@@ -247,6 +248,13 @@ export default {
       if (request.method === "OPTIONS") return onRequestOptions();
       if (request.method === "POST") return onRequestPost({ request, env });
       return json(405, { success: false, error: "Method not allowed." });
+    }
+
+    // Config diagnostics — reports only whether the secret is attached and
+    // its length, never the value.
+    if (url.pathname === "/api/health") {
+      const key = env.ANTHROPIC_API_KEY || "";
+      return json(200, { ok: true, hasKey: key.length > 0, keyLen: key.length });
     }
 
     return env.ASSETS.fetch(request);
