@@ -13,7 +13,7 @@
  * (Settings → Variables and Secrets).
  */
 
-const MODEL = "claude-sonnet-4-20250514";
+const MODEL = "claude-sonnet-4-6";
 const MAX_TOKENS = 512;
 const MAX_MESSAGES = 30;
 const MAX_CONTENT_LENGTH = 2000;
