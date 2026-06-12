@@ -1,17 +1,16 @@
 /**
- * Axon AI chat agent — Cloudflare Pages advanced-mode worker (_worker.js).
+ * Axon AI chat agent — Cloudflare Worker (entry point, see wrangler.jsonc).
  *
- * Handles POST /api/chat and passes every other request through to the
- * static site via env.ASSETS. Advanced mode is used instead of a
- * /functions directory because this Pages project serves /functions as
- * static files rather than compiling it.
+ * The site deploys as a Worker with static assets: requests matching a
+ * file in /public are served as assets, everything else (i.e. /api/chat)
+ * reaches this script. Non-API paths fall through to env.ASSETS.
  *
  * Ported from the axon-chatbot Express server (validation, prompt build,
  * Claude call). Self-contained on purpose: no node_modules, so the
  * Claude API is called with fetch.
  *
- * Requires ANTHROPIC_API_KEY set as a secret in the Pages project
- * (Settings → Environment variables → Production).
+ * Requires ANTHROPIC_API_KEY set as a secret on the Worker
+ * (Settings → Variables and Secrets).
  */
 
 const MODEL = "claude-sonnet-4-20250514";

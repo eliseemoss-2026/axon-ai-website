@@ -1,0 +1,13 @@
+{
+  // Worker name must match the existing "axon-ai-website" Worker in the
+  // Cloudflare dashboard — its routes (axonaitech.uk) are attached to it.
+  "name": "axon-ai-website",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-06-01",
+  // Preserve variables/secrets set in the dashboard (ANTHROPIC_API_KEY).
+  "keep_vars": true,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  }
+}
