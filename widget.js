@@ -1,0 +1,222 @@
+/**
+ * Axon AI Chat Widget — embeddable chat agent.
+ *
+ * Install on any website with one line:
+ *   <script src="https://YOUR-SERVER/widget.js" data-client="CLIENT_ID"
+ *           data-name="Assistant name" data-color="#6c5ce7" defer></script>
+ *
+ * Optional attributes:
+ *   data-server  — API base URL (defaults to the script's own origin)
+ *   data-greeting — first message shown when the chat opens
+ */
+(function () {
+  "use strict";
+
+  var script = document.currentScript;
+  if (!script) return;
+
+  var CLIENT_ID = script.getAttribute("data-client");
+  if (!CLIENT_ID) return;
+
+  var SERVER = script.getAttribute("data-server") || new URL(script.src).origin;
+  var BOT_NAME = script.getAttribute("data-name") || "Assistant";
+  var COLOR = script.getAttribute("data-color") || "#6c5ce7";
+  var GREETING =
+    script.getAttribute("data-greeting") ||
+    "Hi! How can I help you today?";
+  var STORAGE_KEY = "axon-chat-" + CLIENT_ID;
+  var MAX_HISTORY = 28; // server caps at 30; leave room for the new message
+
+  var history = loadHistory();
+  var open = false;
+  var busy = false;
+
+  injectStyles();
+  var ui = buildUi();
+  document.body.appendChild(ui.root);
+  renderHistory();
+
+  /* ---------- persistence ---------- */
+
+  function loadHistory() {
+    try {
+      return JSON.parse(sessionStorage.getItem(STORAGE_KEY)) || [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveHistory() {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(-MAX_HISTORY)));
+    } catch (e) {
+      /* storage unavailable — chat still works in-memory */
+    }
+  }
+
+  /* ---------- UI ---------- */
+
+  function injectStyles() {
+    var css =
+      ".axon-w *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}" +
+      ".axon-bubble{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:99999;display:flex;align-items:center;justify-content:center;transition:transform .15s}" +
+      ".axon-bubble:hover{transform:scale(1.07)}" +
+      ".axon-bubble svg{width:26px;height:26px;fill:#fff}" +
+      ".axon-panel{position:fixed;bottom:90px;right:20px;width:min(360px,calc(100vw - 32px));height:min(520px,calc(100vh - 120px));background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.28);z-index:99999;display:none;flex-direction:column;overflow:hidden}" +
+      ".axon-panel.axon-open{display:flex}" +
+      ".axon-head{padding:14px 16px;color:#fff;font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px}" +
+      ".axon-head .axon-dot{width:8px;height:8px;border-radius:50%;background:#2ecc71;flex:none}" +
+      ".axon-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background:#f7f7fb}" +
+      ".axon-msg{max-width:85%;padding:9px 12px;border-radius:14px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}" +
+      ".axon-msg.axon-user{align-self:flex-end;color:#fff;border-bottom-right-radius:4px}" +
+      ".axon-msg.axon-bot{align-self:flex-start;background:#fff;color:#222;border:1px solid #e8e8ef;border-bottom-left-radius:4px}" +
+      ".axon-typing{align-self:flex-start;padding:11px 14px;background:#fff;border:1px solid #e8e8ef;border-radius:14px;display:flex;gap:4px}" +
+      ".axon-typing i{width:6px;height:6px;border-radius:50%;background:#bbb;animation:axonB 1s infinite}" +
+      ".axon-typing i:nth-child(2){animation-delay:.15s}.axon-typing i:nth-child(3){animation-delay:.3s}" +
+      "@keyframes axonB{0%,60%,100%{opacity:.3}30%{opacity:1}}" +
+      ".axon-form{display:flex;border-top:1px solid #e8e8ef;background:#fff}" +
+      ".axon-input{flex:1;border:none;outline:none;padding:13px 14px;font-size:14px}" +
+      ".axon-send{border:none;background:none;cursor:pointer;padding:0 14px;font-weight:600;font-size:14px}" +
+      ".axon-powered{text-align:center;font-size:10px;color:#aab;padding:4px 0 6px;background:#fff}" +
+      ".axon-powered a{color:inherit}";
+    var style = document.createElement("style");
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+
+  function buildUi() {
+    var root = document.createElement("div");
+    root.className = "axon-w";
+
+    var bubble = document.createElement("button");
+    bubble.className = "axon-bubble";
+    bubble.style.background = COLOR;
+    bubble.setAttribute("aria-label", "Open chat with " + BOT_NAME);
+    bubble.innerHTML =
+      '<svg viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.9 2 11.7c0 2.7 1.4 5.1 3.6 6.7-.1 1.1-.6 2.4-1.5 3.6 1.9-.2 3.5-.9 4.7-1.7 1 .3 2.1.4 3.2.4 5.5 0 10-3.9 10-8.7S17.5 3 12 3z"/></svg>';
+
+    var panel = document.createElement("div");
+    panel.className = "axon-panel";
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-label", BOT_NAME + " chat");
+
+    var head = document.createElement("div");
+    head.className = "axon-head";
+    head.style.background = COLOR;
+    head.innerHTML = '<span class="axon-dot"></span>';
+    head.appendChild(document.createTextNode(BOT_NAME));
+
+    var msgs = document.createElement("div");
+    msgs.className = "axon-msgs";
+
+    var form = document.createElement("form");
+    form.className = "axon-form";
+    var input = document.createElement("input");
+    input.className = "axon-input";
+    input.type = "text";
+    input.maxLength = 2000;
+    input.placeholder = "Type a message…";
+    input.setAttribute("aria-label", "Message");
+    var send = document.createElement("button");
+    send.className = "axon-send";
+    send.type = "submit";
+    send.style.color = COLOR;
+    send.textContent = "Send";
+    form.appendChild(input);
+    form.appendChild(send);
+
+    var powered = document.createElement("div");
+    powered.className = "axon-powered";
+    powered.innerHTML = 'Powered by <a href="https://axonaitech.uk" target="_blank" rel="noopener">Axon AI</a>';
+
+    panel.appendChild(head);
+    panel.appendChild(msgs);
+    panel.appendChild(form);
+    panel.appendChild(powered);
+    root.appendChild(panel);
+    root.appendChild(bubble);
+
+    bubble.addEventListener("click", function () {
+      open = !open;
+      panel.classList.toggle("axon-open", open);
+      if (open) {
+        if (history.length === 0) addBotMessage(GREETING, false);
+        input.focus();
+      }
+    });
+
+    function handleSend(e) {
+      e.preventDefault();
+      var text = input.value.trim();
+      if (!text || busy) return;
+      input.value = "";
+      sendMessage(text);
+    }
+
+    form.addEventListener("submit", handleSend); // Enter key
+    send.addEventListener("click", handleSend); // button click
+
+    return { root: root, msgs: msgs, input: input };
+  }
+
+  function appendMessage(role, text) {
+    var el = document.createElement("div");
+    el.className = "axon-msg " + (role === "user" ? "axon-user" : "axon-bot");
+    if (role === "user") el.style.background = COLOR;
+    el.textContent = text;
+    ui.msgs.appendChild(el);
+    ui.msgs.scrollTop = ui.msgs.scrollHeight;
+  }
+
+  function addBotMessage(text, save) {
+    history.push({ role: "assistant", content: text });
+    if (save !== false) saveHistory();
+    appendMessage("assistant", text);
+  }
+
+  function renderHistory() {
+    history.forEach(function (m) {
+      appendMessage(m.role, m.content);
+    });
+  }
+
+  function showTyping() {
+    var el = document.createElement("div");
+    el.className = "axon-typing";
+    el.innerHTML = "<i></i><i></i><i></i>";
+    ui.msgs.appendChild(el);
+    ui.msgs.scrollTop = ui.msgs.scrollHeight;
+    return el;
+  }
+
+  /* ---------- API ---------- */
+
+  function sendMessage(text) {
+    busy = true;
+    history.push({ role: "user", content: text });
+    saveHistory();
+    appendMessage("user", text);
+    var typing = showTyping();
+
+    fetch(SERVER + "/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ clientId: CLIENT_ID, messages: history.slice(-MAX_HISTORY) }),
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        typing.remove();
+        busy = false;
+        if (data.success) {
+          addBotMessage(data.reply);
+        } else {
+          addBotMessage(data.error || "Sorry, something went wrong. Please try again.", false);
+        }
+      })
+      .catch(function () {
+        typing.remove();
+        busy = false;
+        addBotMessage("Sorry, I couldn't connect. Please try again in a moment.", false);
+      });
+  }
+})();
