@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme-default>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Votre offre — Axon AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--em:#10b981;--em2:#06d6a0;--bg:#060810;--bg2:#0b0f1a;--fg:#fff;--muted:rgba(255,255,255,0.55);--border:rgba(255,255,255,0.09);--font:'Outfit',sans-serif;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--fg);font-family:var(--font);line-height:1.6;min-height:100vh;padding:32px 20px;}
+  .wrap{max-width:760px;margin:0 auto;}
+  .logo{display:flex;align-items:center;gap:10px;margin-bottom:40px;}
+  .logo-icon{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 40% 40%,rgba(16,185,129,0.4),rgba(6,8,16,0.9));border:1px solid rgba(16,185,129,0.4);box-shadow:0 0 16px rgba(16,185,129,0.25);}
+  .logo b{font-weight:800;font-size:18px;letter-spacing:.02em;}
+  .logo span{font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--em);display:block;}
+  h1{font-size:clamp(28px,6vw,42px);font-weight:800;line-height:1.1;margin-bottom:14px;}
+  h1 .hl{color:var(--em);}
+  .intro{color:var(--muted);font-size:16px;margin-bottom:36px;max-width:600px;}
+  .cards{display:flex;flex-direction:column;gap:16px;}
+  .card{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:24px;transition:border-color .2s,transform .2s;}
+  .card:hover{border-color:rgba(16,185,129,0.5);transform:translateY(-2px);}
+  .card.feature{border-color:rgba(16,185,129,0.4);box-shadow:0 0 0 1px rgba(16,185,129,0.15),0 20px 50px rgba(16,185,129,0.06);}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;}
+  .card h2{font-size:20px;font-weight:700;}
+  .card .desc{color:var(--muted);font-size:14px;margin-top:6px;max-width:420px;}
+  .price{text-align:right;white-space:nowrap;}
+  .price .now{font-size:30px;font-weight:800;color:var(--em);}
+  .price .was{display:block;font-size:14px;color:var(--muted);text-decoration:line-through;}
+  .badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--em);background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);padding:3px 10px;border-radius:30px;margin-bottom:10px;}
+  .choose{display:inline-flex;align-items:center;gap:8px;margin-top:18px;background:var(--em);color:#04130d;font-weight:700;font-size:15px;text-decoration:none;padding:12px 24px;border-radius:40px;transition:transform .15s,box-shadow .2s;}
+  .choose:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(16,185,129,0.3);}
+  .note{color:var(--muted);font-size:13px;margin-top:30px;text-align:center;}
+  footer{margin-top:40px;padding-top:24px;border-top:1px solid var(--border);color:var(--muted);font-size:13px;text-align:center;}
+  footer a{color:var(--em);text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">
+    <div class="logo-icon"></div>
+    <div><b>Axon AI</b><span>by John Marrion</span></div>
+  </div>
+
+  <h1>Choisissez votre <span class="hl">formule</span></h1>
+  <p class="intro">Merci pour votre confiance ! Voici les trois options pour votre projet. Sélectionnez celle qui vous correspond — votre choix m'est envoyé directement et nous en reparlons lors de notre appel.</p>
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <h2>Une page web</h2>
+          <p class="desc">Une page unique, moderne et soignée — idéale pour une landing page, une présentation ou un produit.</p>
+        </div>
+        <div class="price"><span class="now">150&nbsp;$</span></div>
+      </div>
+      <a class="choose" href="mailto:eliseemoss@gmail.com?subject=Mon%20choix%20%3A%20Une%20page%20web%20(150%24)&body=Bonjour%20John%2C%0A%0AJe%20souhaite%20choisir%20la%20formule%20%C2%AB%20Une%20page%20web%20%C2%BB%20%C3%A0%20150%24.%0A%0AMerci%20!">Choisir cette formule →</a>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <h2>Site web complet</h2>
+          <p class="desc">Un site multi-pages complet, rapide et sécurisé, déployé et prêt à l'emploi (sans agent IA).</p>
+        </div>
+        <div class="price"><span class="now">250&nbsp;$</span></div>
+      </div>
+      <a class="choose" href="mailto:eliseemoss@gmail.com?subject=Mon%20choix%20%3A%20Site%20web%20complet%20(250%24)&body=Bonjour%20John%2C%0A%0AJe%20souhaite%20choisir%20la%20formule%20%C2%AB%20Site%20web%20complet%20%C2%BB%20%C3%A0%20250%24.%0A%0AMerci%20!">Choisir cette formule →</a>
+    </div>
+
+    <div class="card feature">
+      <span class="badge">Offre remisée</span>
+      <div class="card-top">
+        <div>
+          <h2>Site web + Agent IA</h2>
+          <p class="desc">Un site complet accompagné d'un agent IA conversationnel qui répond à vos clients 24h/24, en français, et capte les demandes — installé et géré pour vous.</p>
+        </div>
+        <div class="price"><span class="was">750&nbsp;$</span><span class="now">500&nbsp;$</span></div>
+      </div>
+      <a class="choose" href="mailto:eliseemoss@gmail.com?subject=Mon%20choix%20%3A%20Site%20%2B%20Agent%20IA%20(500%24)&body=Bonjour%20John%2C%0A%0AJe%20souhaite%20choisir%20la%20formule%20%C2%AB%20Site%20%2B%20Agent%20IA%20%C2%BB%20%C3%A0%20500%24%20(prix%20remis%C3%A9).%0A%0AMerci%20!">Choisir cette formule →</a>
+    </div>
+
+  </div>
+
+  <p class="note">Vous hésitez ? Pas d'inquiétude — nous en discuterons ensemble lors de notre appel pour trouver la meilleure option.</p>
+
+  <footer>
+    Axon AI · <a href="https://axonaitech.uk">axonaitech.uk</a> · John Marrion
+  </footer>
+</div>
+</body>
+</html>
