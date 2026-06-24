@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme-default>
+<html lang="en">
 <head>
+<script>(function(){try{var l=localStorage.getItem("axon_lang");document.documentElement.lang=(l==="fr")?"fr":"en";}catch(e){}})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Votre offre — Axon AI</title>
+<title data-i18n="title_offre">Your offer — Axon AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -36,61 +37,72 @@
   .note{color:var(--muted);font-size:13px;margin-top:30px;text-align:center;}
   footer{margin-top:40px;padding-top:24px;border-top:1px solid var(--border);color:var(--muted);font-size:13px;text-align:center;}
   footer a{color:var(--em);text-decoration:none;}
+  .topbar{display:flex;justify-content:flex-end;margin-bottom:8px;}
+  .lang-toggle{display:flex;align-items:center;background:none;border:1px solid var(--border);border-radius:40px;height:32px;padding:2px;cursor:pointer;overflow:hidden;}
+  .lang-toggle:hover{border-color:var(--em);}
+  .lang-toggle span{font-family:var(--font);font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--muted);padding:0 11px;height:100%;display:flex;align-items:center;border-radius:40px;transition:color .2s,background .2s;}
+  html[lang="en"] .lang-toggle .lang-en,
+  html[lang="fr"] .lang-toggle .lang-fr{color:#000;background:var(--em);}
+  .lang-toggle:focus-visible{outline:2px solid var(--em);outline-offset:2px;}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="topbar">
+    <button class="lang-toggle" type="button" onclick="axonToggleLang()" aria-label="Switch language between English and French" data-i18n-attr="aria-label" data-i18n-key="lang_aria"><span class="lang-en">EN</span><span class="lang-fr">FR</span></button>
+  </div>
   <div class="logo">
     <div class="logo-icon"></div>
     <div><b>Axon AI</b><span>by John Marrion</span></div>
   </div>
 
-  <h1>Choisissez votre <span class="hl">formule</span></h1>
-  <p class="intro">Merci pour votre confiance ! Voici les trois options pour votre projet. Sélectionnez celle qui vous correspond — votre choix m'est envoyé directement et nous en reparlons lors de notre appel.</p>
+  <h1><span data-i18n="offre_h1_pre">Choose your </span><span class="hl" data-i18n="offre_h1_hl">plan</span></h1>
+  <p class="intro" data-i18n="offre_intro">Thank you for your trust! Here are three options for your project. Pick the one that fits you — your choice is sent straight to me and we'll go over it together on our call.</p>
 
   <div class="cards">
 
     <div class="card">
       <div class="card-top">
         <div>
-          <h2>Une page web</h2>
-          <p class="desc">Une page unique, moderne et soignée — idéale pour une landing page, une présentation ou un produit.</p>
+          <h2 data-i18n="offre_c1_title">A single web page</h2>
+          <p class="desc" data-i18n="offre_c1_desc">One polished, modern page — ideal for a landing page, a presentation, or a product.</p>
         </div>
-        <div class="price"><span class="now">150&nbsp;$</span></div>
+        <div class="price"><span class="now">$150</span></div>
       </div>
-      <a class="choose" href="mailto:eliseemoss@gmail.com?subject=Mon%20choix%20%3A%20Une%20page%20web%20(150%24)&body=Bonjour%20John%2C%0A%0AJe%20souhaite%20choisir%20la%20formule%20%C2%AB%20Une%20page%20web%20%C2%BB%20%C3%A0%20150%24.%0A%0AMerci%20!">Choisir cette formule →</a>
+      <a class="choose" href="mailto:eliseemoss@gmail.com?subject=Mon%20choix%20%3A%20Une%20page%20web%20(150%24)&body=Bonjour%20John%2C%0A%0AJe%20souhaite%20choisir%20la%20formule%20%C2%AB%20Une%20page%20web%20%C2%BB%20%C3%A0%20150%24.%0A%0AMerci%20!" data-i18n="offre_choose">Choose this plan →</a>
     </div>
 
     <div class="card">
       <div class="card-top">
         <div>
-          <h2>Site web complet</h2>
-          <p class="desc">Un site multi-pages complet, rapide et sécurisé, déployé et prêt à l'emploi (sans agent IA).</p>
+          <h2 data-i18n="offre_c2_title">Full website</h2>
+          <p class="desc" data-i18n="offre_c2_desc">A complete multi-page website — fast and secure, deployed and ready to use (no AI agent).</p>
         </div>
-        <div class="price"><span class="now">250&nbsp;$</span></div>
+        <div class="price"><span class="now">$250</span></div>
       </div>
-      <a class="choose" href="mailto:eliseemoss@gmail.com?subject=Mon%20choix%20%3A%20Site%20web%20complet%20(250%24)&body=Bonjour%20John%2C%0A%0AJe%20souhaite%20choisir%20la%20formule%20%C2%AB%20Site%20web%20complet%20%C2%BB%20%C3%A0%20250%24.%0A%0AMerci%20!">Choisir cette formule →</a>
+      <a class="choose" href="mailto:eliseemoss@gmail.com?subject=Mon%20choix%20%3A%20Site%20web%20complet%20(250%24)&body=Bonjour%20John%2C%0A%0AJe%20souhaite%20choisir%20la%20formule%20%C2%AB%20Site%20web%20complet%20%C2%BB%20%C3%A0%20250%24.%0A%0AMerci%20!" data-i18n="offre_choose">Choose this plan →</a>
     </div>
 
     <div class="card feature">
-      <span class="badge">Offre remisée</span>
+      <span class="badge" data-i18n="offre_c3_badge">Discounted offer</span>
       <div class="card-top">
         <div>
-          <h2>Site web + Agent IA</h2>
-          <p class="desc">Un site complet accompagné d'un agent IA conversationnel qui répond à vos clients 24h/24, en français, et capte les demandes — installé et géré pour vous.</p>
+          <h2 data-i18n="offre_c3_title">Website + AI Agent</h2>
+          <p class="desc" data-i18n="offre_c3_desc">A complete website paired with a conversational AI agent that answers your customers 24/7, in French, and captures inquiries — installed and managed for you.</p>
         </div>
-        <div class="price"><span class="was">750&nbsp;$</span><span class="now">500&nbsp;$</span></div>
+        <div class="price"><span class="was">$750</span><span class="now">$500</span></div>
       </div>
-      <a class="choose" href="mailto:eliseemoss@gmail.com?subject=Mon%20choix%20%3A%20Site%20%2B%20Agent%20IA%20(500%24)&body=Bonjour%20John%2C%0A%0AJe%20souhaite%20choisir%20la%20formule%20%C2%AB%20Site%20%2B%20Agent%20IA%20%C2%BB%20%C3%A0%20500%24%20(prix%20remis%C3%A9).%0A%0AMerci%20!">Choisir cette formule →</a>
+      <a class="choose" href="mailto:eliseemoss@gmail.com?subject=Mon%20choix%20%3A%20Site%20%2B%20Agent%20IA%20(500%24)&body=Bonjour%20John%2C%0A%0AJe%20souhaite%20choisir%20la%20formule%20%C2%AB%20Site%20%2B%20Agent%20IA%20%C2%BB%20%C3%A0%20500%24%20(prix%20remis%C3%A9).%0A%0AMerci%20!" data-i18n="offre_choose">Choose this plan →</a>
     </div>
 
   </div>
 
-  <p class="note">Vous hésitez ? Pas d'inquiétude — nous en discuterons ensemble lors de notre appel pour trouver la meilleure option.</p>
+  <p class="note" data-i18n="offre_note">Not sure? No worries — we'll talk it through together on our call to find the best option.</p>
 
   <footer>
     Axon AI · <a href="https://axonaitech.uk">axonaitech.uk</a> · John Marrion
   </footer>
 </div>
+<script src="/i18n.js"></script>
 </body>
 </html>

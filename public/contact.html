@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem("axon-theme");if(t==="light"||(!t&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches))document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+<script>(function(){try{var l=localStorage.getItem("axon_lang");document.documentElement.lang=(l==="fr")?"fr":"en";}catch(e){}})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
@@ -9,7 +10,7 @@
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
   <meta name="robots" content="index, follow">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://app.cal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://formspree.io https://app.cal.com; frame-src https://cal.com https://app.cal.com; img-src 'self' data: blob:; object-src 'none'; base-uri 'self';">
-<title>Contact — Axon AI</title>
+<title data-i18n="title_contact">Contact — Axon AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -35,6 +36,13 @@ html[data-theme="light"] #particles { opacity: 0.35; }
 .theme-toggle .icon-sun { display:none; }
 html[data-theme="light"] .theme-toggle .icon-sun { display:block; }
 html[data-theme="light"] .theme-toggle .icon-moon { display:none; }
+.lang-toggle { display:flex;align-items:center;background:none;border:1px solid var(--border);border-radius:40px;height:34px;padding:2px;cursor:pointer;flex-shrink:0;overflow:hidden; }
+.lang-toggle:hover { border-color:var(--em); }
+.lang-toggle span { font-family:var(--font);font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--muted);padding:0 11px;height:100%;display:flex;align-items:center;border-radius:40px;transition:color .2s,background .2s; }
+html[lang="en"] .lang-toggle .lang-en,
+html[lang="fr"] .lang-toggle .lang-fr { color:#000;background:var(--em); }
+.lang-toggle:focus-visible { outline:2px solid var(--em);outline-offset:2px; }
+.nav-right { display:flex;align-items:center;gap:12px; }
 html[data-theme="light"] .nav-logo-text .logo-main { color: var(--fg); }
 html[data-theme="light"] .hero-name .name-john { color: var(--fg); }
 html[data-theme="light"] .hero-name .line2 { -webkit-text-stroke: 1px rgba(11,18,34,0.35); }
@@ -67,7 +75,7 @@ nav.scrolled{background:rgba(6,8,16,0.92);border-color:var(--border);}
 .page-hero{padding:160px 48px 80px;max-width:1200px;margin:0 auto;text-align:center;}
 .page-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--em);letter-spacing:0.16em;text-transform:uppercase;margin-bottom:24px;opacity:0;animation:fadeUp .7s .2s forwards;}
 .page-title{font-family:var(--font);font-weight:900;font-size:clamp(44px,7vw,90px);line-height:0.95;letter-spacing:-0.03em;margin-bottom:24px;opacity:0;animation:fadeUp .8s .35s forwards;}
-.page-title span{color:var(--em);}
+.page-title .hl{color:var(--em);}
 .page-sub{font-size:17px;color:var(--muted);font-weight:400;line-height:1.7;max-width:520px;margin:0 auto 48px;opacity:0;animation:fadeUp .8s .5s forwards;}
 .page-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeUp .8s .65s forwards;}
 
@@ -193,24 +201,27 @@ footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;align-i
     </div>
   </a>
   <ul class="nav-links">
-    <li><a href="John_Marrion_Landing_Page.html#services">Services</a></li>
-    <li><a href="John_Marrion_Landing_Page.html#process">Process</a></li>
-    <li><a href="John_Marrion_Landing_Page.html#faq">FAQ</a></li>
-    <li><a href="contact.html" class="active">Contact</a></li>
+    <li><a href="index.html#services" data-i18n="nav_services">Services</a></li>
+    <li><a href="index.html#process" data-i18n="nav_process">Process</a></li>
+    <li><a href="index.html#faq" data-i18n="nav_faq">FAQ</a></li>
+    <li><a href="contact.html" class="active" data-i18n="nav_contact">Contact</a></li>
   </ul>
-  <button class="theme-toggle" aria-label="Switch between dark and light mode" onclick="axonToggleTheme()"><svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
-  <a data-cal-link="john-marrion-kivtcz" data-cal-config='{"layout":"month_view"}' class="nav-cta" style="cursor:pointer;">🤖 Book a call</a>
+  <div class="nav-right">
+    <button class="lang-toggle" type="button" onclick="axonToggleLang()" aria-label="Switch language between English and French" data-i18n-attr="aria-label" data-i18n-key="lang_aria"><span class="lang-en">EN</span><span class="lang-fr">FR</span></button>
+    <button class="theme-toggle" aria-label="Switch between dark and light mode" data-i18n-attr="aria-label" data-i18n-key="theme_aria" onclick="axonToggleTheme()"><svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+    <a data-cal-link="john-marrion-kivtcz" data-cal-config='{"layout":"month_view"}' class="nav-cta" style="cursor:pointer;" data-i18n="nav_cta">🤖 Book a call</a>
+  </div>
 </nav>
 
 <!-- PAGE HERO -->
 <section class="page-hero">
-  <div class="page-eyebrow">🤖 Let's build your AI advantage</div>
-  <h1 class="page-title">Get in <span>touch</span></h1>
-  <p class="page-sub">Have a project in mind, a question about AI, or just want to explore what's possible? I respond within 24 hours.</p>
+  <div class="page-eyebrow" data-i18n="contact_eyebrow">🤖 Let's build your AI advantage</div>
+  <h1 class="page-title"><span data-i18n="contact_title_pre">Get in </span><span class="hl" data-i18n="contact_title_hl">touch</span></h1>
+  <p class="page-sub" data-i18n="contact_sub">Have a project in mind, a question about AI, or just want to explore what's possible? I respond within 24 hours.</p>
   <div class="page-actions">
     <a data-cal-link="john-marrion-kivtcz" data-cal-config='{"layout":"month_view"}' class="btn-primary" style="cursor:pointer;">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Book a free strategy call
+      <span data-i18n="cta_book_strategy">Book a free strategy call</span>
     </a>
   </div>
 </section>
@@ -220,28 +231,28 @@ footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;align-i
 
   <!-- Left: info + cal -->
   <div>
-    <div class="contact-info-title reveal">Ready to talk?</div>
-    <div class="contact-info-sub reveal reveal-d1">Whether you're just exploring AI or ready to start a project — every conversation starts with a simple message or a free 30-minute call.</div>
+    <div class="contact-info-title reveal" data-i18n="contact_info_title">Ready to talk?</div>
+    <div class="contact-info-sub reveal reveal-d1" data-i18n="contact_info_sub">Whether you're just exploring AI or ready to start a project — every conversation starts with a simple message or a free 30-minute call.</div>
 
     <div class="contact-items reveal reveal-d1">
       <a href="tel:+8613310086258" class="contact-item">
         <div class="contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.46-.46a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92v2z"/></svg></div>
-        <div><div class="ci-label">WhatsApp · Phone</div><div class="ci-value">+86 133 1008 6258</div></div>
+        <div><div class="ci-label" data-i18n="ci_whatsapp">WhatsApp · Phone</div><div class="ci-value">+86 133 1008 6258</div></div>
       </a>
       <a id="email-link" href="#" class="contact-item">
         <div class="contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-        <div><div class="ci-label">Email</div><div class="ci-value" id="email-display">—</div></div>
+        <div><div class="ci-label" data-i18n="ci_email">Email</div><div class="ci-value" id="email-display">—</div></div>
       </a>
       <div class="contact-item">
         <div class="contact-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-        <div><div class="ci-label">Location</div><div class="ci-value">Remote · Worldwide</div></div>
+        <div><div class="ci-label" data-i18n="ci_location">Location</div><div class="ci-value" data-i18n="ci_location_val">Remote · Worldwide</div></div>
       </div>
     </div>
 
     <div class="cal-cta reveal reveal-d2">
       <div style="font-size:36px;margin-bottom:12px;">📅</div>
-      <p>Prefer to talk directly? Book a free 30-minute strategy call and let's map out your AI opportunity together.</p>
-      <a data-cal-link="john-marrion-kivtcz" data-cal-config='{"layout":"month_view"}' class="btn-primary" style="cursor:pointer;">
+      <p data-i18n="cal_cta_text">Prefer to talk directly? Book a free 30-minute strategy call and let's map out your AI opportunity together.</p>
+      <a data-cal-link="john-marrion-kivtcz" data-cal-config='{"layout":"month_view"}' class="btn-primary" style="cursor:pointer;" data-i18n="cal_cta_btn">
         Book free call — no pitch
       </a>
     </div>
@@ -251,62 +262,62 @@ footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;align-i
   <div class="contact-form-wrap reveal reveal-d1">
     <div id="form-success">
       <div class="success-icon">🤖✅</div>
-      <h4>Message sent!</h4>
-      <p>Thanks for reaching out. John will get back to you within 24 hours.</p>
+      <h4 data-i18n="form_success_title">Message sent!</h4>
+      <p data-i18n="form_success_desc">Thanks for reaching out. John will get back to you within 24 hours.</p>
     </div>
-    <div id="form-error">⚠️ Something went wrong. Please email us directly.</div>
+    <div id="form-error" data-i18n="form_error">⚠️ Something went wrong. Please email us directly.</div>
 
     <form id="contact-form" action="https://formspree.io/f/xeedybgl" method="POST" novalidate>
       <input type="hidden" name="_subject" value="New AI Consulting inquiry — AxonAI.com" />
       <div class="form-2col">
         <div class="form-row">
-          <label class="form-label" for="f-name">Your name *</label>
-          <input id="f-name" class="form-input" type="text" name="name" placeholder="Full name" required />
+          <label class="form-label" for="f-name" data-i18n="form_label_name">Your name *</label>
+          <input id="f-name" class="form-input" type="text" name="name" placeholder="Full name" data-i18n-attr="placeholder" data-i18n-key="form_ph_name" required />
         </div>
         <div class="form-row">
-          <label class="form-label" for="f-email">Email *</label>
-          <input id="f-email" class="form-input" type="email" name="email" placeholder="you@company.com" required />
+          <label class="form-label" for="f-email" data-i18n="form_label_email">Email *</label>
+          <input id="f-email" class="form-input" type="email" name="email" placeholder="you@company.com" data-i18n-attr="placeholder" data-i18n-key="form_ph_email" required />
         </div>
       </div>
       <div class="form-2col">
         <div class="form-row">
-          <label class="form-label" for="f-company">Company</label>
-          <input id="f-company" class="form-input" type="text" name="company" placeholder="Company name" />
+          <label class="form-label" for="f-company" data-i18n="form_label_company">Company</label>
+          <input id="f-company" class="form-input" type="text" name="company" placeholder="Company name" data-i18n-attr="placeholder" data-i18n-key="form_ph_company" />
         </div>
         <div class="form-row">
-          <label class="form-label" for="f-service">Service interest</label>
+          <label class="form-label" for="f-service" data-i18n="form_label_service">Service interest</label>
           <select id="f-service" class="form-select" name="service">
-            <option value="">Select a service</option>
-            <option>AI Strategy & Roadmap</option>
-            <option>Workflow Automation</option>
-            <option>LLM & GPT Integration</option>
-            <option>AI Analytics</option>
-            <option>AI Team Training</option>
-            <option>Custom AI Solution</option>
-            <option>Not sure yet</option>
+            <option value="" data-i18n="form_opt_select">Select a service</option>
+            <option data-i18n="form_opt_strategy">AI Strategy & Roadmap</option>
+            <option data-i18n="form_opt_automation">Workflow Automation</option>
+            <option data-i18n="form_opt_llm">LLM & GPT Integration</option>
+            <option data-i18n="form_opt_analytics">AI Analytics</option>
+            <option data-i18n="form_opt_training">AI Team Training</option>
+            <option data-i18n="form_opt_custom">Custom AI Solution</option>
+            <option data-i18n="form_opt_notsure">Not sure yet</option>
           </select>
         </div>
       </div>
       <div class="form-row">
-        <label class="form-label" for="f-msg">Tell me about your project *</label>
-        <textarea id="f-msg" class="form-textarea" name="message" placeholder="What are you trying to solve? What does success look like for you?" required></textarea>
+        <label class="form-label" for="f-msg" data-i18n="form_label_msg">Tell me about your project *</label>
+        <textarea id="f-msg" class="form-textarea" name="message" placeholder="What are you trying to solve? What does success look like for you?" data-i18n-attr="placeholder" data-i18n-key="form_ph_msg" required></textarea>
       </div>
-      <button class="form-submit" type="submit" id="form-btn">Send Message 🤖</button>
+      <button class="form-submit" type="submit" id="form-btn" data-i18n="form_submit">Send Message 🤖</button>
     </form>
   </div>
 
 </div>
 
 <footer>
-  <div class="footer-copy">© 2025 <span class="footer-em">Axon AI</span> · Led by John Marrion. All rights reserved.</div>
+  <div class="footer-copy" data-i18n-html="footer_copy">© 2025 <span class="footer-em">Axon AI</span> · Led by John Marrion. All rights reserved.</div>
   <div class="footer-links">
-    <a href="index.html">Home</a>
-    <a href="John_Marrion_Landing_Page.html#services">Services</a>
-    <a href="John_Marrion_Landing_Page.html#faq">FAQ</a>
+    <a href="index.html" data-i18n="nav_home">Home</a>
+    <a href="index.html#services" data-i18n="nav_services">Services</a>
+    <a href="index.html#faq" data-i18n="nav_faq">FAQ</a>
   </div>
   <div class="footer-loc">
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-    Remote · Worldwide
+    <span data-i18n="footer_loc">Remote · Worldwide</span>
   </div>
 </footer>
 
@@ -333,7 +344,8 @@ const revObs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isInters
 document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(i%3)*.1+'s';revObs.observe(el);});
 
 const form=document.getElementById('contact-form'),formBtn=document.getElementById('form-btn'),formSuccess=document.getElementById('form-success'),formError=document.getElementById('form-error');
-if(form){form.addEventListener('submit',async e=>{e.preventDefault();formError.style.display='none';const name=form.querySelector('[name="name"]').value.trim(),email=form.querySelector('[name="email"]').value.trim(),message=form.querySelector('[name="message"]').value.trim();if(!name||!email||!message){formError.textContent='⚠️ Please fill in all required fields.';formError.style.display='block';return;}formBtn.textContent='Sending…';formBtn.disabled=true;formBtn.style.opacity='.7';try{const res=await fetch(form.action,{method:'POST',headers:{'Accept':'application/json'},body:new FormData(form)});if(res.ok){form.style.display='none';formSuccess.style.display='block';}else throw new Error();}catch{formError.textContent='⚠️ Something went wrong. Please email us directly.';formError.style.display='block';formBtn.textContent='Send Message 🤖';formBtn.disabled=false;formBtn.style.opacity='1';}});}
+function fmsg(key,fallback){return (window.AxonI18n&&window.AxonI18n.t(key)!==key)?window.AxonI18n.t(key):fallback;}
+if(form){form.addEventListener('submit',async e=>{e.preventDefault();formError.style.display='none';const name=form.querySelector('[name="name"]').value.trim(),email=form.querySelector('[name="email"]').value.trim(),message=form.querySelector('[name="message"]').value.trim();if(!name||!email||!message){formError.textContent=fmsg('form_error_required','⚠️ Please fill in all required fields.');formError.style.display='block';return;}formBtn.textContent=fmsg('form_sending','Sending…');formBtn.disabled=true;formBtn.style.opacity='.7';try{const res=await fetch(form.action,{method:'POST',headers:{'Accept':'application/json'},body:new FormData(form)});if(res.ok){form.style.display='none';formSuccess.style.display='block';}else throw new Error();}catch{formError.textContent=fmsg('form_error','⚠️ Something went wrong. Please email us directly.');formError.style.display='block';formBtn.textContent=fmsg('form_submit','Send Message 🤖');formBtn.disabled=false;formBtn.style.opacity='1';}});}
 </script>
 
 <script>
@@ -360,5 +372,6 @@ function axonToggleTheme(){
   try{localStorage.setItem("axon-theme",light?"dark":"light");}catch(e){}
 }
 </script>
+<script src="/i18n.js"></script>
 </body>
 </html>

@@ -21,11 +21,30 @@
   var SERVER = script.getAttribute("data-server") || new URL(script.src).origin;
   var BOT_NAME = script.getAttribute("data-name") || "Assistant";
   var COLOR = script.getAttribute("data-color") || "#6c5ce7";
-  var GREETING =
+  var DEFAULT_GREETING =
     script.getAttribute("data-greeting") ||
     "Hi! How can I help you today?";
   var STORAGE_KEY = "axon-chat-" + CLIENT_ID;
   var MAX_HISTORY = 28; // server caps at 30; leave room for the new message
+
+  // ── language ──
+  // The widget mirrors the site-wide EN/FR toggle (see i18n.js). When FR is
+  // active we use French UI strings and ask the backend to reply in French.
+  function lang() {
+    return (window.AxonI18n && window.AxonI18n.getLang()) || "en";
+  }
+  // Localised UI string, falling back to the widget's English defaults (and
+  // the data-greeting attribute for the opening message) when i18n isn't loaded.
+  function tr(key, fallback) {
+    if (window.AxonI18n) {
+      var v = window.AxonI18n.t(key);
+      if (v && v !== key) return v;
+    }
+    return fallback;
+  }
+  function greeting() {
+    return lang() === "fr" ? tr("widget_greeting", DEFAULT_GREETING) : DEFAULT_GREETING;
+  }
 
   var history = loadHistory();
   var open = false;
@@ -102,7 +121,7 @@
     var bubble = document.createElement("button");
     bubble.className = "axon-bubble";
     bubble.style.background = COLOR;
-    bubble.setAttribute("aria-label", "Open chat with " + BOT_NAME);
+    bubble.setAttribute("aria-label", tr("widget_open_aria", "Open chat with ") + BOT_NAME);
     bubble.innerHTML =
       '<svg viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.9 2 11.7c0 2.7 1.4 5.1 3.6 6.7-.1 1.1-.6 2.4-1.5 3.6 1.9-.2 3.5-.9 4.7-1.7 1 .3 2.1.4 3.2.4 5.5 0 10-3.9 10-8.7S17.5 3 12 3z"/></svg>';
 
@@ -120,7 +139,7 @@
     var close = document.createElement("button");
     close.className = "axon-close";
     close.type = "button";
-    close.setAttribute("aria-label", "Close chat");
+    close.setAttribute("aria-label", tr("widget_close_aria", "Close chat"));
     close.innerHTML = "&times;";
     head.appendChild(close);
 
@@ -133,13 +152,13 @@
     input.className = "axon-input";
     input.type = "text";
     input.maxLength = 2000;
-    input.placeholder = "Type a message…";
+    input.placeholder = tr("widget_placeholder", "Type a message…");
     input.setAttribute("aria-label", "Message");
     var send = document.createElement("button");
     send.className = "axon-send";
     send.type = "submit";
     send.style.color = COLOR;
-    send.textContent = "Send";
+    send.textContent = tr("widget_send", "Send");
     form.appendChild(input);
     form.appendChild(send);
 
@@ -158,7 +177,7 @@
       open = !open;
       panel.classList.toggle("axon-open", open);
       if (open) {
-        if (history.length === 0) addBotMessage(GREETING, false);
+        if (history.length === 0) addBotMessage(greeting(), false);
         input.focus();
       }
     });
@@ -179,8 +198,25 @@
     form.addEventListener("submit", handleSend); // Enter key
     send.addEventListener("click", handleSend); // button click
 
-    return { root: root, msgs: msgs, input: input };
+    return { root: root, msgs: msgs, input: input, send: send, bubble: bubble, close: close };
   }
+
+  // Re-localise the static UI when the visitor flips the site language. We
+  // don't touch already-sent messages — only the chrome and the opening
+  // greeting (the latter only while the conversation is still empty).
+  function relocalize() {
+    ui.input.placeholder = tr("widget_placeholder", "Type a message…");
+    ui.send.textContent = tr("widget_send", "Send");
+    ui.bubble.setAttribute("aria-label", tr("widget_open_aria", "Open chat with ") + BOT_NAME);
+    ui.close.setAttribute("aria-label", tr("widget_close_aria", "Close chat"));
+    if (history.length === 1 && history[0].role === "assistant") {
+      history[0].content = greeting();
+      var first = ui.msgs.querySelector(".axon-msg.axon-bot");
+      if (first) first.textContent = greeting();
+    }
+  }
+
+  window.addEventListener("axon:langchange", relocalize);
 
   function appendMessage(role, text) {
     var el = document.createElement("div");
@@ -224,7 +260,8 @@
     fetch(SERVER + "/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ clientId: CLIENT_ID, messages: history.slice(-MAX_HISTORY) }),
+      // `lang` tells the Worker which language to answer in (en | fr).
+      body: JSON.stringify({ clientId: CLIENT_ID, lang: lang(), messages: history.slice(-MAX_HISTORY) }),
     })
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -233,13 +270,13 @@
         if (data.success) {
           addBotMessage(data.reply);
         } else {
-          addBotMessage(data.error || "Sorry, something went wrong. Please try again.", false);
+          addBotMessage(data.error || tr("widget_error", "Sorry, something went wrong. Please try again."), false);
         }
       })
       .catch(function () {
         typing.remove();
         busy = false;
-        addBotMessage("Sorry, I couldn't connect. Please try again in a moment.", false);
+        addBotMessage(tr("widget_offline", "Sorry, I couldn't connect. Please try again in a moment."), false);
       });
   }
 })();
