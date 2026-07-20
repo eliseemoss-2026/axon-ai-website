@@ -6,14 +6,17 @@
  * reaches this script. Non-API paths fall through to env.ASSETS.
  *
  * Ported from the axon-chatbot Express server (validation, prompt build,
- * Claude call). Self-contained on purpose: no node_modules, so the
- * Claude API is called with fetch.
+ * model call). Self-contained on purpose: no node_modules.
  *
- * Requires ANTHROPIC_API_KEY set as a secret on the Worker
- * (Settings → Variables and Secrets).
+ * Brain = Cloudflare Workers AI (free allocation, no API key), via the
+ * "AI" binding declared in wrangler.jsonc. The old Anthropic path remains
+ * as a fallback: it is used only if the AI binding is missing AND
+ * ANTHROPIC_API_KEY is set with credit (the previous key ran dry on
+ * 2026-06-29, which silently killed the demo the cold emails point to).
  */
 
-const MODEL = "claude-sonnet-4-6";
+const CF_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+const MODEL = "claude-sonnet-4-6"; // fallback path only
 const MAX_TOKENS = 512;
 const MAX_MESSAGES = 30;
 const MAX_CONTENT_LENGTH = 2000;
@@ -225,9 +228,29 @@ export async function onRequestPost(context) {
     console.log(`[lead] contact details detected for client "${parsed.clientId}"`);
   }
 
+  const system = buildSystemPrompt(config, parsed.lang);
+
+  // Primary: Cloudflare Workers AI — free, no key to drain.
+  if (env.AI) {
+    try {
+      const aiRes = await env.AI.run(CF_MODEL, {
+        messages: [{ role: "system", content: system }, ...parsed.messages],
+        max_tokens: MAX_TOKENS,
+      });
+      const reply = (aiRes && aiRes.response || "").trim();
+      if (reply) return json(200, { success: true, reply });
+      console.error("[Workers AI] empty response");
+      return json(502, { success: false, error: "Sorry, I had trouble responding. Please try again.", code: "ai_empty" });
+    } catch (err) {
+      console.error("[Workers AI Error]", err.message);
+      return json(502, { success: false, error: "Sorry, I had trouble responding. Please try again.", code: "ai_exception" });
+    }
+  }
+
+  // Fallback: Anthropic, only if the AI binding is absent and a key is set.
   const apiKey = (env.ANTHROPIC_API_KEY || "").trim();
   if (!apiKey) {
-    console.error("[config] ANTHROPIC_API_KEY is not set on the Worker");
+    console.error("[config] no AI binding and ANTHROPIC_API_KEY is not set");
     return json(502, { success: false, error: "Sorry, I had trouble responding. Please try again.", code: "config" });
   }
 
@@ -242,7 +265,7 @@ export async function onRequestPost(context) {
       body: JSON.stringify({
         model: MODEL,
         max_tokens: MAX_TOKENS,
-        system: buildSystemPrompt(config, parsed.lang),
+        system,
         messages: parsed.messages,
       }),
     });
@@ -270,11 +293,15 @@ export default {
       return json(405, { success: false, error: "Method not allowed." });
     }
 
-    // Config diagnostics — reports only whether the secret is attached and
-    // its length, never the value.
+    // Config diagnostics — reports which brain is active, never any secret.
     if (url.pathname === "/api/health") {
       const key = env.ANTHROPIC_API_KEY || "";
-      return json(200, { ok: true, hasKey: key.length > 0, keyLen: key.length });
+      return json(200, {
+        ok: true,
+        brain: env.AI ? "workers-ai" : (key ? "anthropic" : "none"),
+        model: env.AI ? CF_MODEL : MODEL,
+        hasKey: key.length > 0,
+      });
     }
 
     return env.ASSETS.fetch(request);

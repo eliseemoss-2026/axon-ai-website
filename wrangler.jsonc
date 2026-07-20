@@ -6,6 +6,11 @@
   "compatibility_date": "2026-06-01",
   // Preserve variables/secrets set in the dashboard (ANTHROPIC_API_KEY).
   "keep_vars": true,
+  // Free Cloudflare Workers AI — the chat agent's brain since 2026-07-21
+  // (the Anthropic key ran out of credit and the demo went dark).
+  "ai": {
+    "binding": "AI"
+  },
   "assets": {
     "directory": "./public",
     "binding": "ASSETS"
